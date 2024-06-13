@@ -1,0 +1,35 @@
+
+services:
+  db:
+    image: mariadb:10.3
+    container_name: mariadb
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./demobdd.sql:/docker-entrypoint-initdb.d/dump.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: demobdd
+      MYSQL_USER: demoutilisateur
+      MYSQL_PASSWORD: Mdp@Ass3zSécuris3
+    ports:
+      - "3306:3306"
+  php:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    ports:
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+      - "443:443/udp" # HTTP/3
+    volumes:
+      - ./src/:/app/public
+      - caddy_data:/data
+      - caddy_config:/config
+    # comment the following line in production, it allows to have nice human-readable logs in dev
+    tty: true
+
+# Volumes needed for Caddy certificates and configuration
+volumes:
+  caddy_data:
+  caddy_config:
+  db_data:
